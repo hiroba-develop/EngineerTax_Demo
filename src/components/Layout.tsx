@@ -18,8 +18,10 @@ import {
   Wallet,
 } from "lucide-react";
 
+import type { ReactNode } from 'react';
+
 interface LayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
   hideSidebar?: boolean;
 }
 

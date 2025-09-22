@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavigationStep, LearningContent } from '../types';
+import type { NavigationStep } from '../types';
 import {
   Map,
   CheckCircle,
@@ -19,7 +19,6 @@ import {
 } from 'lucide-react';
 
 const Navigation: React.FC = () => {
-  const [selectedStep, setSelectedStep] = useState<string | null>(null);
   const [expandedContent, setExpandedContent] = useState<string[]>([]);
 
   // 手順ナビゲーションのデータ

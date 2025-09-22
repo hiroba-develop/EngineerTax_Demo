@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../contexts/AppContext';
-import { TaxCalculationResult, Deduction, CalculationStep, SalaryIncome } from '../types';
+import type { TaxCalculationResult, Deduction, CalculationStep, SalaryIncome } from '../types';
 import {
   Calculator,
   DollarSign,
   FileText,
-  Info,
   ChevronDown,
   ChevronUp,
   AlertCircle,

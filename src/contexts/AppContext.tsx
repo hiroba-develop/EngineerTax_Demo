@@ -1,13 +1,14 @@
-import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import { 
-  AnnualTask, 
-  Transaction, 
-  TaxCalculationResult, 
-  AppSettings, 
-  UserProfile, 
+import React, { createContext, useContext, useReducer } from 'react';
+import type { ReactNode } from 'react';
+import type {
+  AnnualTask,
+  Transaction,
+  TaxCalculationResult,
+  AppSettings,
+  UserProfile,
   TaxReturnMode,
   TaskStatus,
-  ExpenseCategory 
+  ExpenseCategory
 } from '../types';
 
 // アプリケーションの状態

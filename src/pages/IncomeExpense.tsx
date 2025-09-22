@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../contexts/AppContext';
-import { Transaction, ExpenseCategory } from '../types';
+import type { Transaction, ExpenseCategory } from '../types';
 import {
   Plus,
   Upload,
   Download,
-  Filter,
   Search,
   Calendar,
   DollarSign,
@@ -21,8 +20,6 @@ import {
 
 const IncomeExpense: React.FC = () => {
   const { state, dispatch } = useApp();
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [filterCategory, setFilterCategory] = useState<ExpenseCategory | 'all' | 'income'>('all');
   const [filterDateRange, setFilterDateRange] = useState({ start: '', end: '' });
   const [searchQuery, setSearchQuery] = useState('');
@@ -203,7 +200,7 @@ const IncomeExpense: React.FC = () => {
           
           <div className="mt-4 lg:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
             <button
-              onClick={() => setShowAddModal(true)}
+              onClick={() => alert('取引追加機能は開発中です')}
               className="flex items-center px-4 py-2 bg-[#627962] text-white rounded-md hover:bg-[#627962]/90 transition-colors"
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -402,7 +399,7 @@ const IncomeExpense: React.FC = () => {
                   
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => setEditingTransaction(transaction)}
+                      onClick={() => alert('取引編集機能は開発中です')}
                       className="p-1 text-gray-400 hover:text-[#627962] transition-colors"
                     >
                       <Edit3 className="w-4 h-4" />

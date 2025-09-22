@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../contexts/AppContext';
-import { 
-  AnnualTask, 
-  TaskStatus, 
-  TaskPriority, 
-  SideJobType,
+import type {
+  AnnualTask,
+  TaskStatus,
+  TaskPriority,
   TaskCategory,
-  TaxReturnMode 
+  TaxReturnMode
 } from '../types';
 import {
   Calendar,
@@ -19,14 +18,10 @@ import {
   DollarSign,
   Target,
   ChevronRight,
-  Filter,
-  ToggleLeft,
-  ToggleRight,
 } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
-  const { state, dispatch, updateTaskStatus, addCustomTask, changeTaxReturnMode } = useApp();
-  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+  const { state, dispatch, updateTaskStatus, changeTaxReturnMode } = useApp();
   const [filterStatus, setFilterStatus] = useState<TaskStatus | 'all'>('all');
   const [filterCategory, setFilterCategory] = useState<TaskCategory | 'all'>('all');
 
@@ -318,7 +313,7 @@ const Dashboard: React.FC = () => {
               </select>
 
               <button
-                onClick={() => setShowAddTaskModal(true)}
+                onClick={() => alert('タスク追加機能は開発中です')}
                 className="flex items-center px-4 py-2 bg-[#627962] text-white rounded-md hover:bg-[#627962]/90 transition-colors"
               >
                 <Plus className="w-4 h-4 mr-2" />
