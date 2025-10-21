@@ -54,9 +54,6 @@ const Dashboard: React.FC = () => {
           <h2 className="text-lg font-semibold text-[#363427]">最近の投稿</h2>
           <Link to="/posts" className="text-sm text-orange-600 hover:underline">すべて見る</Link>
         </div>
-        {recent.length === 0 ? (
-          <div className="p-6 text-gray-600">まだ投稿がありません。まずは新規投稿を作成しましょう。</div>
-        ) : (
           <div className="p-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {recent.map((p) => (
@@ -75,7 +72,6 @@ const Dashboard: React.FC = () => {
               ))}
             </div>
           </div>
-        )}
       </div>
 
       

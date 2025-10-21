@@ -37,7 +37,7 @@ const PostList = () => {
 
       {posts.length === 0 ? (
         <div className="p-4 border border-gray-200 rounded-lg bg-white text-sm text-gray-600">
-          まだ投稿がありません。<Link to="/posts/new" className="text-orange-600 hover:underline ml-1">最初の投稿を作成</Link>
+          まだ投稿がありません。
         </div>
       ) : (
         <ul className="space-y-3">
