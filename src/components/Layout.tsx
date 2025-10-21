@@ -1,308 +1,207 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { useApp } from "../contexts/AppContext";
 import {
   Home,
-  Settings,
   LogOut,
-  Menu,
-  X,
+  Settings as SettingsIcon,
   User,
   Bell,
   ChevronDown,
-  Calculator,
-  TrendingUp,
-  MessageCircle,
-  Map,
   Wallet,
+  Search,
+  HelpCircle,
+  PenSquare,
 } from "lucide-react";
 
 import type { ReactNode } from 'react';
 
 interface LayoutProps {
   children: ReactNode;
-  hideSidebar?: boolean;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, hideSidebar = false }) => {
+const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { user, logout } = useAuth();
-  const { state } = useApp();
   const location = useLocation();
   const navigate = useNavigate();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // デバッグ用ログ
-  console.log('Layout rendered with hideSidebar:', hideSidebar, 'Current path:', location.pathname);
+  console.log('Layout rendered - path:', location.pathname);
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/");
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // 検索機能は未実装のため、現時点ではコンソール出力のみ
+    console.log("search:", searchQuery);
   };
 
   // EngineerWallet用のナビゲーションアイテム
   const navigationItems = [
     { name: "ダッシュボード", href: "/", icon: Home, description: "年間タスク管理" },
-    { name: "収支管理", href: "/income-expense", icon: TrendingUp, description: "収入・経費管理" },
-    { name: "税金シミュレーター", href: "/tax-simulator", icon: Calculator, description: "税額計算" },
-    { name: "手順ナビ", href: "/navigation", icon: Map, description: "申告手順ガイド" },
-    { name: "AIチャット", href: "/chat", icon: MessageCircle, description: "Q&Aサポート" },
-    { name: "設定", href: "/settings", icon: Settings, description: "アプリ設定" },
+    { name: "投稿一覧", href: "/posts", icon: PenSquare, description: "記事の一覧" },
   ];
-
-  // 進捗情報の取得
-  const completedTasks = state.tasks.filter(task => task.status === 'completed').length;
-  const totalTasks = state.tasks.length;
-  const progressPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
   return (
     <div className="min-h-screen bg-[#F1ECEB]">
-      {/* サイドバー（デスクトップ） */}
-      {!hideSidebar && (
-        <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
-          <div className="flex min-h-0 flex-1 flex-col bg-white border-r border-gray-200 shadow-sm">
-            {/* ロゴ・ブランド */}
-            <div className="flex flex-1 flex-col pt-5 pb-4 overflow-y-auto">
-              <div className="flex items-center flex-shrink-0 px-4">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 bg-[#627962] rounded-lg flex items-center justify-center">
-                    <Wallet className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="ml-3">
-                    <span className="text-xl font-bold text-[#363427]">
-                      EngineerWallet
-                    </span>
-                    <p className="text-xs text-gray-500 mt-0.5">確定申告支援</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* 申告モード表示 */}
-              <div className="mx-4 mt-4 p-3 bg-[#627962] bg-opacity-10 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-[#363427]">申告モード</span>
-                  <span className="text-xs bg-[#627962] text-white px-2 py-1 rounded-full">
-                    {state.settings.taxReturnMode === 'blue' ? '青色申告' : '白色申告'}
-                  </span>
-                </div>
-                {totalTasks > 0 && (
-                  <div className="mt-2">
-                    <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
-                      <span>進捗</span>
-                      <span>{progressPercentage}%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-[#627962] h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${progressPercentage}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* ナビゲーション */}
-              <nav className="mt-6 flex-1 px-2 space-y-1">
-                {navigationItems.map((item) => {
-                  const isActive = location.pathname === item.href;
-                  return (
-                    <Link
-                      key={item.name}
-                      to={item.href}
-                      className={`${
-                        isActive
-                          ? "bg-[#627962] bg-opacity-10 border-r-2 border-[#627962] text-[#627962]"
-                          : "text-[#363427] hover:bg-gray-50 hover:text-[#627962]"
-                      } group flex items-center px-3 py-2.5 text-sm font-medium rounded-md transition-all duration-200`}
-                      title={item.description}
-                    >
-                      <item.icon
-                        className={`${
-                          isActive ? "text-[#627962]" : "text-gray-400 group-hover:text-[#627962]"
-                        } mr-3 flex-shrink-0 h-5 w-5`}
-                      />
-                      <div>
-                        <div>{item.name}</div>
-                        <div className="text-xs text-gray-500 group-hover:text-gray-600">
-                          {item.description}
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </nav>
-            </div>
-
-            {/* ユーザー情報 */}
-            <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
-              <div className="flex items-center w-full">
-                <div className="flex-shrink-0">
-                  <div className="w-10 h-10 bg-[#627962] bg-opacity-20 rounded-full flex items-center justify-center">
-                    <User className="w-5 h-5 text-[#627962]" />
-                  </div>
-                </div>
-                <div className="ml-3 flex-1">
-                  <p className="text-sm font-medium text-[#363427]">
-                    {user?.name || "ゲストユーザー"}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {state.settings.fiscalYear}年度 | デモモード
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* モバイルサイドバーオーバーレイ */}
-      {isSidebarOpen && !hideSidebar && (
-        <div className="fixed inset-0 flex z-40 md:hidden">
-          <div
-            className="fixed inset-0 bg-gray-600 bg-opacity-75"
-            onClick={() => setIsSidebarOpen(false)}
-          />
-          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white">
-            <div className="absolute top-0 right-0 -mr-12 pt-2">
-              <button
-                className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <X className="h-6 w-6 text-white" />
-              </button>
-            </div>
-
-            {/* モバイル用サイドバーコンテンツ */}
-            <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
-              <div className="flex-shrink-0 flex items-center px-4">
-                <div className="w-8 h-8 bg-[#627962] rounded-lg flex items-center justify-center">
-                  <Wallet className="w-5 h-5 text-white" />
-                </div>
-                <span className="ml-2 text-lg font-bold text-[#363427]">
-                  EngineerWallet
-                </span>
-              </div>
-              <nav className="mt-5 px-2 space-y-1">
-                {navigationItems.map((item) => {
-                  const isActive = location.pathname === item.href;
-                  return (
-                    <Link
-                      key={item.name}
-                      to={item.href}
-                      className={`${
-                        isActive
-                          ? "bg-[#627962] bg-opacity-10 border-r-2 border-[#627962] text-[#627962]"
-                          : "text-[#363427] hover:bg-gray-50 hover:text-[#627962]"
-                      } group flex items-center px-2 py-2 text-sm font-medium rounded-md`}
-                      onClick={() => setIsSidebarOpen(false)}
-                    >
-                      <item.icon
-                        className={`${
-                          isActive ? "text-[#627962]" : "text-gray-400"
-                        } mr-3 flex-shrink-0 h-5 w-5`}
-                      />
-                      {item.name}
-                    </Link>
-                  );
-                })}
-              </nav>
-            </div>
-
-            {/* モバイル用ユーザー情報 */}
-            <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
-              <div className="flex items-center w-full">
-                <div className="flex-shrink-0">
-                  <div className="w-8 h-8 bg-[#627962] bg-opacity-20 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-[#627962]" />
-                  </div>
-                </div>
-                <div className="ml-3 flex-1">
-                  <p className="text-sm font-medium text-[#363427]">
-                    {user?.name || "ゲストユーザー"}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {state.settings.fiscalYear}年度 | デモモード
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* メインコンテンツエリア */}
-      <div className={`${hideSidebar ? '' : 'md:pl-64'} flex flex-col flex-1`}>
-        {/* トップヘッダー */}
+      <div className={`flex flex-col flex-1`}>
+        {/* トップヘッダー（2段構成） */}
         <div className="sticky top-0 z-10 bg-white shadow-sm border-b border-gray-200">
+          {/* 1段目：ブランド・検索・CTA */}
           <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
-            {/* モバイル用メニューボタン */}
-            {!hideSidebar && (
-              <button
-                className="md:hidden -ml-0.5 -mt-0.5 h-12 w-12 inline-flex items-center justify-center rounded-md text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#627962]"
-                onClick={() => setIsSidebarOpen(true)}
-              >
-                <Menu className="h-6 w-6" />
-              </button>
-            )}
-
-            {/* ページタイトル */}
-            {!hideSidebar && (
-              <div className="flex-1 md:flex-none">
-                <h1 className="text-lg font-semibold text-[#363427] md:hidden">
-                  {navigationItems.find((item) => item.href === location.pathname)
-                    ?.name || "ページ"}
-                </h1>
+            <div className="flex items-center space-x-3">
+              {/* ブランド */}
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
+                  <Wallet className="w-6 h-6 text-white" />
+                </div>
+                <div className="ml-3">
+                  <span className="text-2xl font-extrabold text-[#363427] tracking-tight">
+                    EngineerWallet
+                  </span>
+                  <p className="text-xs text-gray-500 mt-0.5">確定申告支援</p>
+                </div>
               </div>
-            )}
+            </div>
 
-            {/* 右側のアクション */}
-            <div className="flex items-center space-x-4">
-              {/* 年度選択 */}
-              <div className="hidden sm:block text-sm text-[#363427]">
-                <span className="font-medium">{state.settings.fiscalYear}年度</span>
-              </div>
-
-              {/* 通知ボタン */}
-              <button className="p-1 rounded-full text-gray-400 hover:text-[#627962] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#627962] transition-colors">
-                <Bell className="h-6 h-6" />
-              </button>
-
-              {/* ユーザーメニュー（デスクトップ） */}
-              <div className="relative hidden md:block">
+            {/* 検索フォーム */}
+            {/* <div className="flex-1 max-w-3xl mx-4 hidden md:block">
+              <form onSubmit={handleSearchSubmit} className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="気になる話題、なかまを探そう"
+                  className="w-full pl-10 pr-24 py-3 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm placeholder:text-gray-400"
+                />
                 <button
-                  className="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#627962]"
-                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  type="submit"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5 rounded-full bg-orange-500 text-white text-sm font-medium hover:bg-orange-600"
                 >
-                  <div className="w-8 h-8 bg-[#627962] bg-opacity-20 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-[#627962]" />
-                  </div>
-                  <ChevronDown className="ml-1 h-4 w-4 text-gray-400" />
+                  検索
                 </button>
+              </form>
+            </div> */}
 
-                {isUserMenuOpen && (
-                  <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+            {/* 右側：ヘルプ/通知 + 認証CTA */}
+            <div className="flex items-center space-x-3">
+              <button className="hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-full text-gray-500 hover:text-orange-600 focus:outline-none">
+                <HelpCircle className="w-6 h-6" />
+              </button>
+              <button className="inline-flex items-center justify-center w-10 h-10 rounded-full text-gray-500 hover:text-orange-600 focus:outline-none">
+                <Bell className="w-6 h-6" />
+              </button>
+
+              {user ? (
+                <div className="relative hidden md:block">
+                  <button
+                    className="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  >
+                    <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                      <User className="w-4 h-4 text-orange-600" />
+                    </div>
+                    <ChevronDown className="ml-1 h-4 w-4 text-gray-400" />
+                  </button>
+                  {isUserMenuOpen && (
+                    <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                     <div className="py-1">
                       <button
-                        onClick={handleLogout}
+                        onClick={() => navigate('/settings')}
                         className="flex items-center w-full px-4 py-2 text-sm text-[#363427] hover:bg-gray-100"
                       >
-                        <LogOut className="mr-3 h-4 w-4" />
-                        ログアウト
+                        <SettingsIcon className="mr-3 h-4 w-4" />
+                        設定
                       </button>
+                      <div className="my-1 border-t border-gray-100" />
+                        <button
+                          onClick={handleLogout}
+                          className="flex items-center w-full px-4 py-2 text-sm text-[#363427] hover:bg-gray-100"
+                        >
+                          <LogOut className="mr-3 h-4 w-4" />
+                          ログアウト
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  )}
+                </div>
+              ) : (
+                <div className="hidden md:flex items-center space-x-3">
+                  <button
+                    onClick={() => navigate('/login')}
+                    className="px-4 py-2 rounded-full border border-orange-500 text-orange-600 text-sm font-semibold hover:bg-orange-50"
+                  >
+                    ログイン
+                  </button>
+                  <button
+                onClick={() => navigate('/register')}
+                    className="px-4 py-2 rounded-full bg-orange-500 text-white text-sm font-semibold hover:bg-orange-600"
+                  >
+                    無料で始める
+                  </button>
+                </div>
+              )}
+
+              {/* モバイル用ログアウト/ログイン簡略 */}
+              <div className="md:hidden">
+                {user ? (
+                  <button
+                    className="p-1 rounded-full text-gray-400 hover:text-orange-600 focus:outline-none"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="h-6 w-6" />
+                  </button>
+                ) : (
+                  <button
+                  onClick={() => navigate('/register')}
+                    className="px-3 py-1.5 rounded-full bg-orange-500 text-white text-xs font-semibold hover:bg-orange-600"
+                  >
+                    開始
+                  </button>
                 )}
               </div>
-
-              {/* モバイル用ログアウトボタン */}
-              <button
-                className="md:hidden p-1 rounded-full text-gray-400 hover:text-[#627962] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#627962]"
-                onClick={handleLogout}
-              >
-                <LogOut className="h-6 w-6" />
-              </button>
             </div>
+          </div>
+
+          {/* 2段目：アイコン付きナビ + 投稿するCTA */}
+          <div className="h-14 flex items-center px-4 sm:px-6 lg:px-8 border-t border-gray-100">
+            <div className="flex-1 overflow-x-auto">
+              <div className="flex items-center space-x-6 text-sm">
+                {navigationItems.map((item) => {
+                  const isActive = location.pathname === item.href;
+                  return (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      className={`inline-flex items-center whitespace-nowrap px-2 py-1.5 rounded-md ${
+                        isActive
+                          ? 'text-orange-600'
+                          : 'text-[#363427] hover:text-orange-600'
+                      }`}
+                      title={item.description}
+                    >
+                      <item.icon className={`mr-2 h-5 w-5 ${isActive ? 'text-orange-600' : 'text-gray-400'}`} />
+                      <span className="font-medium">{item.name}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+            {user && (
+              <div className="ml-4">
+                <button onClick={() => navigate('/posts/new')} className="inline-flex items-center px-4 py-2 rounded-full border border-gray-300 hover:border-orange-500 text-[#363427] hover:text-orange-600 bg-white shadow-sm">
+                  <PenSquare className="w-5 h-5 mr-2" />
+                  投稿する
+                </button>
+              </div>
+            )}
           </div>
         </div>
 

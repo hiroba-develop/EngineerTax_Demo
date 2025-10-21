@@ -8,42 +8,21 @@ import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { AppProvider } from "./contexts/AppContext";
 import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
-import IncomeExpense from "./pages/IncomeExpense";
-import TaxSimulator from "./pages/TaxSimulator";
-import Navigation from "./pages/Navigation";
-import Chat from "./pages/Chat";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
+import PostNew from "./pages/PostNew";
+import PostShow from "./pages/PostShow";
+import PostList from "./pages/PostList";
 import { useEffect } from "react";
 
-// 認証が必要なページをラップするコンポーネント
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+// 認証不要運用のため、ProtectedRouteは撤廃
+
+// 設定ページのみ認証を要求するガード
+const RequireLogin: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, isLoading, shouldRedirectToLogin } = useAuth();
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
-          <p className="text-gray-600">読み込み中...</p>
-          <p className="text-sm text-blue-600 mt-2">(デモモード)</p>
-        </div>
-      </div>
-    );
-  }
-
-  // cookieに「userId」キーが無い場合は、必ずlogin画面に遷移
-  if (shouldRedirectToLogin) {
-    return <Navigate to="/login" replace />;
-  }
-
-  // ユーザーが存在しない場合はログイン画面に遷移
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
+  if (isLoading) return null;
+  if (shouldRedirectToLogin || !user) return <Navigate to="/login" replace />;
   return <>{children}</>;
 };
 
@@ -84,68 +63,56 @@ const AppContent: React.FC = () => {
 
   return (
     <Routes>
-      {/* ログイン画面 */}
+      {/* ログイン/登録 */}
       <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
 
-      {/* 認証が必要なページ */}
+      {/* 記事 */}
+      <Route
+        path="/posts"
+        element={
+          <Layout>
+            <PostList />
+          </Layout>
+        }
+      />
+      <Route
+        path="/posts/new"
+        element={
+          <RequireLogin>
+            <Layout>
+              <PostNew />
+            </Layout>
+          </RequireLogin>
+        }
+      />
+      <Route
+        path="/posts/:id"
+        element={
+          <Layout>
+            <PostShow />
+          </Layout>
+        }
+      />
+
+      {/* 各ページ（ログイン不要） */}
       <Route
         path="/"
         element={
-          <ProtectedRoute>
-            <Layout>
-              <Dashboard />
-            </Layout>
-          </ProtectedRoute>
+          <Layout>
+            <Dashboard />
+          </Layout>
         }
       />
-      <Route
-        path="/income-expense"
-        element={
-          <ProtectedRoute>
-            <Layout>
-              <IncomeExpense />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/tax-simulator"
-        element={
-          <ProtectedRoute>
-            <Layout>
-              <TaxSimulator />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/navigation"
-        element={
-          <ProtectedRoute>
-            <Layout>
-              <Navigation />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/chat"
-        element={
-          <ProtectedRoute>
-            <Layout>
-              <Chat />
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
+      {/* 収支管理/税金シミュレーター/手順ナビ/AIチャット ルートは削除 */}
       <Route
         path="/settings"
         element={
-          <ProtectedRoute>
+          <RequireLogin>
             <Layout>
               <Settings />
             </Layout>
-          </ProtectedRoute>
+          </RequireLogin>
         }
       />
     </Routes>

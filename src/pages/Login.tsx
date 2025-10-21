@@ -53,7 +53,7 @@ const Login = () => {
         {/* ロゴとタイトル */}
         <div className="text-center">
           <div className="flex justify-center">
-            <div className="w-16 h-16 bg-[#627962] rounded-2xl flex items-center justify-center mb-6">
+            <div className="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center mb-6">
               <Wallet className="w-10 h-10 text-white" />
             </div>
           </div>
@@ -94,7 +94,7 @@ const Login = () => {
                   type="email"
                   autoComplete="email"
                   required
-                  className="appearance-none relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-400 text-[#363427] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#627962] focus:border-transparent transition-colors"
+                className="appearance-none relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-400 text-[#363427] rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-colors"
                   placeholder="your@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -116,7 +116,7 @@ const Login = () => {
                   type="password"
                   autoComplete="current-password"
                   required
-                  className="appearance-none relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-400 text-[#363427] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#627962] focus:border-transparent transition-colors"
+                className="appearance-none relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-400 text-[#363427] rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-colors"
                   placeholder="パスワードを入力"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -131,7 +131,7 @@ const Login = () => {
                 className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white transition-all duration-200 ${
                   isLoading
                     ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-[#627962] hover:bg-[#627962]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#627962] transform hover:scale-[1.02]"
+                    : "bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transform hover:scale-[1.02]"
                 }`}
               >
                 {isLoading ? (
@@ -169,45 +169,20 @@ const Login = () => {
           </form>
 
           {/* デモ用説明 */}
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="mt-6 p-4 bg-orange-50 rounded-lg border border-orange-200">
             <div className="flex items-start">
               <div className="flex-shrink-0">
-                <AlertTriangle className="w-5 h-5 text-blue-600" />
+                <AlertTriangle className="w-5 h-5 text-orange-600" />
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-blue-800 mb-1">
+                <h3 className="text-sm font-medium text-orange-800 mb-1">
                   デモモードについて
                 </h3>
-                <p className="text-sm text-blue-700">
+                <p className="text-sm text-orange-700">
                   このデモでは、任意のメールアドレスとパスワードでログインできます。
                   実際のアプリケーションでは、適切な認証システムを使用してください。
                 </p>
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 機能紹介 */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-[#363427] mb-4 text-center">
-            EngineerWallet の特徴
-          </h3>
-          <div className="space-y-3">
-            <div className="flex items-center text-sm text-gray-600">
-              <CheckCircle className="w-4 h-4 text-green-600 mr-3 flex-shrink-0" />
-              <span>エンジニア特化の確定申告支援</span>
-            </div>
-            <div className="flex items-center text-sm text-gray-600">
-              <CheckCircle className="w-4 h-4 text-green-600 mr-3 flex-shrink-0" />
-              <span>透明性の高い税金計算</span>
-            </div>
-            <div className="flex items-center text-sm text-gray-600">
-              <CheckCircle className="w-4 h-4 text-green-600 mr-3 flex-shrink-0" />
-              <span>学習コンテンツ付きナビゲーション</span>
-            </div>
-            <div className="flex items-center text-sm text-gray-600">
-              <CheckCircle className="w-4 h-4 text-green-600 mr-3 flex-shrink-0" />
-              <span>AIチャットによるQ&Aサポート</span>
             </div>
           </div>
         </div>
