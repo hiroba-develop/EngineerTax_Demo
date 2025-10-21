@@ -9,7 +9,6 @@ import {
   Bell,
   ChevronDown,
   Wallet,
-  Search,
   HelpCircle,
   PenSquare,
 } from "lucide-react";
@@ -25,7 +24,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
 
   // デバッグ用ログ
   console.log('Layout rendered - path:', location.pathname);
@@ -33,12 +31,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const handleLogout = () => {
     logout();
     navigate("/");
-  };
-
-  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // 検索機能は未実装のため、現時点ではコンソール出力のみ
-    console.log("search:", searchQuery);
   };
 
   // EngineerWallet用のナビゲーションアイテム
