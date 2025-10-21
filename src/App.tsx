@@ -11,9 +11,11 @@ import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Persona from "./pages/Persona";
 import PostNew from "./pages/PostNew";
 import PostShow from "./pages/PostShow";
 import PostList from "./pages/PostList";
+import Chat from "./pages/Chat";
 import { useEffect } from "react";
 
 // 認証不要運用のため、ProtectedRouteは撤廃
@@ -57,8 +59,8 @@ const AppContent: React.FC = () => {
       document.head.appendChild(meta);
     }
 
-    // EngineerWallet用のページタイトル設定
-    document.title = "EngineerWallet - エンジニア向け確定申告支援";
+    // EngineerTax用のページタイトル設定
+    document.title = "EngineerTax - エンジニア向け確定申告支援";
   }, []);
 
   return (
@@ -66,6 +68,26 @@ const AppContent: React.FC = () => {
       {/* ログイン/登録 */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route
+        path="/chat"
+        element={
+          <RequireLogin>
+            <Layout>
+              <Chat />
+            </Layout>
+          </RequireLogin>
+        }
+      />
+      <Route
+        path="/persona"
+        element={
+          <RequireLogin>
+            <Layout>
+              <Persona />
+            </Layout>
+          </RequireLogin>
+        }
+      />
 
       {/* 記事 */}
       <Route

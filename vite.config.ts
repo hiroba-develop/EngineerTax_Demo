@@ -4,7 +4,7 @@ import react from "@vitejs/plugin-react-swc";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: "/EngineerWallet_Demo/",
+  base: "/EngineerTax_Demo/",
   publicDir: "public",
   server: {
     port: 5173,

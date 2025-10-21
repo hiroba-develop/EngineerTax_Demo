@@ -7,7 +7,7 @@ export default {
         sans: ['"Noto Sans JP"', "sans-serif"],
       },
       colors: {
-        // EngineerWallet カラーパレット
+        // EngineerTax カラーパレット
         primary: "#627962", // アクセントカラー（深緑）
         base: "#F1ECEB", // ベースカラー（オフホワイト）
         text: "#363427", // テキストカラー（ダークグリーン）

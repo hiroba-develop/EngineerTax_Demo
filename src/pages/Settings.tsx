@@ -1,12 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 
 const Settings = () => {
-  const { user } = useAuth();
+  const { user, role, persona, savePersona } = useAuth();
   const [notificationEnabled, setNotificationEnabled] = useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
   const [language, setLanguage] = useState("ja");
   const [successMessage, setSuccessMessage] = useState("");
+  // ペルソナ（一般ユーザーのみ編集可）
+  const [ageGroup, setAgeGroup] = useState("");
+  const [sideJobStartYear, setSideJobStartYear] = useState("");
+  const [annualIncome, setAnnualIncome] = useState("");
+  const [taxKnowledgeLevel, setTaxKnowledgeLevel] = useState("3");
+
+  useEffect(() => {
+    if (persona) {
+      setAgeGroup(persona.ageGroup ?? "");
+      setSideJobStartYear((persona.sideJobStartYear ?? "").toString());
+      setAnnualIncome((persona.annualIncome ?? "").toString());
+      setTaxKnowledgeLevel((persona.taxKnowledgeLevel ?? 3).toString());
+    }
+  }, [persona]);
 
   // 設定保存処理
   const saveSettings = () => {
@@ -19,6 +33,16 @@ const Settings = () => {
 
     // 成功メッセージを表示
     setSuccessMessage("設定が保存されました");
+
+    // 一般ユーザー（role=0）のみペルソナ更新
+    if (role === 0) {
+      savePersona({
+        ageGroup,
+        sideJobStartYear: Number(sideJobStartYear) || new Date().getFullYear(),
+        annualIncome: Number(annualIncome) || 0,
+        taxKnowledgeLevel: Number(taxKnowledgeLevel) || 3,
+      });
+    }
 
     // 3秒後にメッセージを消す
     setTimeout(() => {
@@ -105,6 +129,73 @@ const Settings = () => {
           </div>
         </div>
       </div>
+
+      {/* 一般ユーザー向けペルソナ編集 */}
+      {role === 0 && (
+        <div className="mt-10 bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
+          <div className="md:grid md:grid-cols-3 md:gap-6">
+            <div className="md:col-span-1">
+              <h3 className="text-lg font-medium leading-6 text-gray-900">ペルソナ</h3>
+              <p className="mt-1 text-sm text-gray-500">一般ユーザーはいつでも更新できます。</p>
+            </div>
+            <div className="mt-5 md:mt-0 md:col-span-2">
+              <div className="grid grid-cols-6 gap-6">
+                <div className="col-span-6 sm:col-span-3">
+                  <label className="block text-sm font-medium text-gray-700">年代</label>
+                  <select
+                    className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    value={ageGroup}
+                    onChange={(e) => setAgeGroup(e.target.value)}
+                  >
+                    <option value="">選択してください</option>
+                    <option value="20代">20代</option>
+                    <option value="30代">30代</option>
+                    <option value="40代">40代</option>
+                    <option value="50代">50代</option>
+                    <option value="60代以上">60代以上</option>
+                  </select>
+                </div>
+                <div className="col-span-6 sm:col-span-3">
+                  <label className="block text-sm font-medium text-gray-700">副業開始年</label>
+                  <input
+                    type="number"
+                    className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    value={sideJobStartYear}
+                    onChange={(e) => setSideJobStartYear(e.target.value)}
+                    min="1980"
+                    max={new Date().getFullYear().toString()}
+                  />
+                </div>
+                <div className="col-span-6 sm:col-span-3">
+                  <label className="block text-sm font-medium text-gray-700">年間の収入（円）</label>
+                  <input
+                    type="number"
+                    className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    value={annualIncome}
+                    onChange={(e) => setAnnualIncome(e.target.value)}
+                    min="0"
+                    step="10000"
+                  />
+                </div>
+                <div className="col-span-6 sm:col-span-3">
+                  <label className="block text-sm font-medium text-gray-700">税金についての知識量（1〜5）</label>
+                  <select
+                    className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    value={taxKnowledgeLevel}
+                    onChange={(e) => setTaxKnowledgeLevel(e.target.value)}
+                  >
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mt-10 bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
         <div className="md:grid md:grid-cols-3 md:gap-6">

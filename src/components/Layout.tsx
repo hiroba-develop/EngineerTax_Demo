@@ -11,6 +11,7 @@ import {
   Wallet,
   HelpCircle,
   PenSquare,
+  MessageSquare,
 } from "lucide-react";
 
 import type { ReactNode } from 'react';
@@ -20,7 +21,7 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const { user, logout } = useAuth();
+  const { user, logout, role } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -33,10 +34,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     navigate("/");
   };
 
-  // EngineerWallet用のナビゲーションアイテム
+  // EngineerTax用のナビゲーションアイテム
   const navigationItems = [
     { name: "ダッシュボード", href: "/", icon: Home, description: "年間タスク管理" },
     { name: "投稿一覧", href: "/posts", icon: PenSquare, description: "記事の一覧" },
+    { name: "チャット", href: "/chat", icon: MessageSquare, description: "管理者とのチャット" },
   ];
 
   return (
@@ -55,7 +57,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </div>
                 <div className="ml-3">
                   <span className="text-2xl font-extrabold text-[#363427] tracking-tight">
-                    EngineerWallet
+                    EngineerTax
                   </span>
                   <p className="text-xs text-gray-500 mt-0.5">確定申告支援</p>
                 </div>
@@ -186,7 +188,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 })}
               </div>
             </div>
-            {user && (
+            {user && role === 1 && (
               <div className="ml-4">
                 <button onClick={() => navigate('/posts/new')} className="inline-flex items-center px-4 py-2 rounded-full border border-gray-300 hover:border-orange-500 text-[#363427] hover:text-orange-600 bg-white shadow-sm">
                   <PenSquare className="w-5 h-5 mr-2" />

@@ -30,11 +30,20 @@ const Register = () => {
       return;
     }
 
+    const domainPart = email.split("@")[1]?.toLowerCase() ?? "";
+    const isAdminDomain = domainPart === "oji-cloud.com";
+
     try {
       setIsLoading(true);
       // デモでは登録=即ログイン扱い
       const success = await login(email, password);
       if (success) {
+        // 一般ユーザーはペルソナページへ遷移
+        if (!isAdminDomain) {
+          navigate("/persona");
+          return;
+        }
+        // 管理者はダッシュボードへ
         navigate("/");
       } else {
         setError("登録に失敗しました");

@@ -58,7 +58,7 @@ const Login = () => {
             </div>
           </div>
           <h2 className="text-3xl font-bold text-[#363427] mb-2">
-            EngineerWallet
+            EngineerTax
           </h2>
           <p className="text-[#363427] text-opacity-80">
             エンジニア向け確定申告支援ツール

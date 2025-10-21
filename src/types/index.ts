@@ -1,4 +1,4 @@
-// EngineerWallet アプリケーション用の型定義
+// EngineerTax アプリケーション用の型定義
 
 // 申告モード
 export type TaxReturnMode = 'blue' | 'white';
