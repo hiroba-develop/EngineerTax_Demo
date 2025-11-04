@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Megaphone } from 'lucide-react';
+// import { Megaphone } from 'lucide-react';
 
 interface PostItem {
   id: string;
@@ -25,15 +25,15 @@ const Dashboard: React.FC = () => {
   const posts = loadPosts();
   const recent = posts.slice(0, 5);
 
-  const announcements = [
-    { id: 'a1', title: 'Markdown記法に対応しました', date: '2025-10-19' },
-    { id: 'a2', title: '投稿一覧ページを追加しました', date: '2025-10-19' },
-  ];
+  // const announcements = [
+  //   { id: 'a1', title: 'Markdown記法に対応しました', date: '2025-10-19' },
+  //   { id: 'a2', title: '投稿一覧ページを追加しました', date: '2025-10-19' },
+  // ];
 
   return (
     <div className="space-y-6">
       {/* お知らせ（最上部） */}
-      <div className="bg-white rounded-lg shadow-sm">
+      {/* <div className="bg-white rounded-lg shadow-sm">
         <div className="p-6 border-b border-gray-200 flex items-center">
           <Megaphone className="w-5 h-5 text-gray-700 mr-2" />
           <h2 className="text-lg font-semibold text-[#363427]">お知らせ</h2>
@@ -46,7 +46,7 @@ const Dashboard: React.FC = () => {
             </li>
           ))}
         </ul>
-      </div>
+      </div> */}
 
       {/* 最近の投稿（サムネイル＋タイトルのカード表示） */}
       <div className="bg-white rounded-lg shadow-sm">
