@@ -12,6 +12,7 @@ import {
   HelpCircle,
   PenSquare,
   MessageSquare,
+  Camera,
 } from "lucide-react";
 
 import type { ReactNode } from 'react';
@@ -39,6 +40,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: "ダッシュボード", href: "/", icon: Home, description: "年間タスク管理" },
     { name: "投稿一覧", href: "/posts", icon: PenSquare, description: "記事の一覧" },
     { name: "チャット", href: "/chat", icon: MessageSquare, description: "管理者とのチャット" },
+    { name: "画像OCR", href: "/image-upload", icon: Camera, description: "画像の文字起こし" },
   ];
 
   return (

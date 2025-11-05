@@ -16,6 +16,7 @@ import PostNew from "./pages/PostNew";
 import PostShow from "./pages/PostShow";
 import PostList from "./pages/PostList";
 import Chat from "./pages/Chat";
+import ImageUpload from "./pages/ImageUpload";
 import { useEffect } from "react";
 
 // 認証不要運用のため、ProtectedRouteは撤廃
@@ -124,6 +125,16 @@ const AppContent: React.FC = () => {
           <Layout>
             <Dashboard />
           </Layout>
+        }
+      />
+      <Route
+        path="/image-upload"
+        element={
+          <RequireLogin>
+            <Layout>
+              <ImageUpload />
+            </Layout>
+          </RequireLogin>
         }
       />
       {/* 収支管理/税金シミュレーター/手順ナビ/AIチャット ルートは削除 */}
