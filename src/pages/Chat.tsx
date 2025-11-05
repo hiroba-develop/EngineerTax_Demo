@@ -69,7 +69,7 @@ const Chat = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-[#363427]">チャット</h2>
+        <h2 className="text-2xl font-bold text-[#363427]">相談チャット</h2>
         {role === 0 && (
           <div className="text-sm text-gray-600">残りチケット: {tickets}</div>
         )}
