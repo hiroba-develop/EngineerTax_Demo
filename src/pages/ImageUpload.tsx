@@ -10,7 +10,12 @@ import {
   Edit,
   Save,
   XCircle,
+  Image as ImageIcon,
 } from 'lucide-react';
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
+import pdfjsWorker from 'pdfjs-dist/legacy/build/pdf.worker?worker&url';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 // サンプル画像のデータ（デモ用）
 const initialImages: ImageFile[] = [
@@ -20,6 +25,7 @@ const initialImages: ImageFile[] = [
     url: '/sample_receipt.png', // publicディレクトリにあると仮定
     tags: ['領収書', '2025年'],
     createdAt: new Date('2025-11-01T10:00:00Z'),
+    fileType: 'image',
   },
   {
     id: uuidv4(),
@@ -27,6 +33,7 @@ const initialImages: ImageFile[] = [
     url: '/sample_business_card.jpg', // publicディレクトリにあると仮定
     tags: ['名刺', '取引先'],
     createdAt: new Date('2025-10-15T14:30:00Z'),
+    fileType: 'image',
   },
 ];
 
@@ -40,6 +47,7 @@ interface ImageFile {
   file?: File; // アップロードされたファイルの実体
   tags: string[];
   createdAt: Date;
+  fileType: 'image' | 'pdf';
 }
 
 const ImageUpload = () => {
@@ -58,6 +66,7 @@ const ImageUpload = () => {
     newValue: string;
   } | null>(null);
   const [newTagInput, setNewTagInput] = useState('');
+  const [activeTab, setActiveTab] = useState<'image' | 'pdf'>('image');
 
   const selectedImage = useMemo(
     () => imageList.find(img => img.id === selectedImageId) || null,
@@ -65,7 +74,7 @@ const ImageUpload = () => {
   );
 
   const processedImages = useMemo(() => {
-    let images = [...imageList];
+    let images = imageList.filter(img => img.fileType === activeTab);
 
     // Filtering
     if (filterTag) {
@@ -91,27 +100,66 @@ const ImageUpload = () => {
     }
 
     return images;
-  }, [imageList, filterTag, sortOrder]);
+  }, [imageList, filterTag, sortOrder, activeTab]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
+    if (!file) return;
+
+    const createNewFileEntry = (url: string) => {
+      const newImage: ImageFile = {
+        id: uuidv4(),
+        name: file.name,
+        url,
+        file: file,
+        tags: [],
+        createdAt: new Date(),
+        fileType: file.type.includes('pdf') ? 'pdf' : 'image',
+      };
+      setImageList(prev => [newImage, ...prev]);
+      setSelectedImageId(newImage.id); // アップロードした画像をすぐに選択
+      setOcrResult('');
+      setError('');
+    };
+
+    if (file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        const newImage: ImageFile = {
-          id: uuidv4(),
-          name: file.name,
-          url: reader.result as string,
-          file: file,
-          tags: [],
-          createdAt: new Date(),
-        };
-        setImageList(prev => [newImage, ...prev]);
-        setSelectedImageId(newImage.id); // アップロードした画像をすぐに選択
-        setOcrResult('');
-        setError('');
+        createNewFileEntry(reader.result as string);
+        setActiveTab('image');
+        event.target.value = '';
       };
       reader.readAsDataURL(file);
+    } else if (file.type === 'application/pdf') {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        try {
+          const arrayBuffer = reader.result as ArrayBuffer;
+          const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+          const page = await pdf.getPage(1);
+          const viewport = page.getViewport({ scale: 1.5 });
+
+          const canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          if (!context) throw new Error('Failed to get canvas context');
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+
+          const renderTask = page.render({ canvasContext: context, viewport, canvas });
+          await renderTask.promise;
+          createNewFileEntry(canvas.toDataURL());
+          setActiveTab('pdf');
+        } catch (pdfError) {
+          console.error('PDF processing error:', pdfError);
+          setError('PDFファイルのプレビュー生成に失敗しました。');
+        } finally {
+          event.target.value = '';
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      setError('対応していないファイル形式です。');
+      event.target.value = '';
     }
   };
 
@@ -237,26 +285,51 @@ const ImageUpload = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">画像アップロード & OCR</h1>
+      <h1 className="text-2xl font-bold mb-4">証票アップロード</h1>
 
       <div className="flex flex-col md:flex-row md:space-x-6">
         {/* Left Column Wrapper */}
         <div className="w-full md:w-1/3">
           {/* Image Folder Card */}
           <div className="bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold mb-3">画像フォルダ</h2>
+            <div className="flex border-b mb-3">
+              <button
+                onClick={() => setActiveTab('image')}
+                className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-colors ${
+                  activeTab === 'image'
+                    ? 'border-b-2 border-orange-500 text-orange-600'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <ImageIcon className="w-4 h-4" />
+                画像フォルダ
+              </button>
+              <button
+                onClick={() => setActiveTab('pdf')}
+                className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-colors ${
+                  activeTab === 'pdf'
+                    ? 'border-b-2 border-orange-500 text-orange-600'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <FileText className="w-4 h-4" />
+                PDFフォルダ
+              </button>
+            </div>
             {/* Upload Button */}
             <label
               htmlFor="image-upload"
               className="w-full mb-4 flex items-center justify-center px-4 py-2 bg-orange-50 text-orange-700 font-semibold rounded-lg cursor-pointer hover:bg-orange-100"
             >
               <UploadCloud className="w-5 h-5 mr-2" />
-              <span>画像をアップロード</span>
+              <span>
+                {activeTab === 'image' ? '画像をアップロード' : 'PDFをアップロード'}
+              </span>
             </label>
             <input
               id="image-upload"
               type="file"
-              accept="image/*"
+              accept={activeTab === 'image' ? 'image/*' : 'application/pdf'}
               onChange={handleFileChange}
               className="hidden"
             />
@@ -298,11 +371,18 @@ const ImageUpload = () => {
                       : 'hover:bg-gray-100'
                   }`}
                 >
-                  <img
-                    src={image.url}
-                    alt={image.name}
-                    className="w-12 h-12 object-cover rounded-md mr-3"
-                  />
+                  <div className="relative w-12 h-12 mr-3 flex-shrink-0">
+                    <img
+                      src={image.url}
+                      alt={image.name}
+                      className="w-12 h-12 object-cover rounded-md"
+                    />
+                    {image.fileType === 'pdf' && (
+                      <div className="absolute -bottom-1 -right-1 bg-white rounded-full shadow p-0.5">
+                        <FileText className="w-3 h-3 text-red-500" />
+                      </div>
+                    )}
+                  </div>
                   <span className="text-sm font-medium text-gray-800 truncate flex-1">
                     {image.name}
                   </span>

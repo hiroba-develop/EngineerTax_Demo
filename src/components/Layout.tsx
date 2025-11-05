@@ -38,9 +38,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   // EngineerTax用のナビゲーションアイテム
   const navigationItems = [
     { name: "ダッシュボード", href: "/", icon: Home, description: "年間タスク管理" },
-    { name: "投稿一覧", href: "/posts", icon: PenSquare, description: "記事の一覧" },
-    { name: "チャット", href: "/chat", icon: MessageSquare, description: "管理者とのチャット" },
-    { name: "画像OCR", href: "/image-upload", icon: Camera, description: "画像の文字起こし" },
+    { name: "記事一覧", href: "/posts", icon: PenSquare, description: "記事の一覧" },
+    { name: "相談チャット", href: "/chat", icon: MessageSquare, description: "税理士との相談チャット" },
+    { name: "証票アップロード", href: "/image-upload", icon: Camera, description: "画像の文字起こしとタグ付け" },
   ];
 
   return (
