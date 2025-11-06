@@ -211,10 +211,13 @@ const VoucherList = () => {
               {processedImages.map(image => (
                 <div
                   key={image.id}
-                  onClick={() => selectImage(image)}
                   className={`bg-white rounded-lg shadow-md transition-all duration-300 ease-in-out overflow-hidden ${selectedImageId === image.id ? 'ring-2 ring-orange-500' : 'hover:shadow-lg'}`}
                 >
-                  <div className="p-4 flex items-center cursor-pointer">
+                  <button
+                    type="button"
+                    onClick={() => selectImage(image)}
+                    className="w-full p-4 flex items-center cursor-pointer text-left focus:outline-none"
+                  >
                     <div className="relative w-16 h-16 mr-4 flex-shrink-0">
                       <img src={image.url} alt={image.name} className="w-16 h-16 object-cover rounded-md" />
                       {image.fileType === 'pdf' && (
@@ -231,7 +234,7 @@ const VoucherList = () => {
                       </div>
                     </div>
                     <ChevronRight className={`w-6 h-6 text-gray-400 transition-transform ${selectedImageId === image.id ? 'transform rotate-90' : ''}`} />
-                  </div>
+                  </button>
 
                   {/* Expanded View */}
                   {selectedImageId === image.id && (
@@ -311,3 +314,4 @@ const VoucherList = () => {
 };
 
 export default VoucherList;
+

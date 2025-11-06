@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import {
   UploadCloud,
   FileText,
@@ -9,7 +8,6 @@ import pdfjsWorker from 'pdfjs-dist/legacy/build/pdf.worker?worker&url';
 import { useVouchers } from '../contexts/VoucherContext'; // useVouchersをインポート
 import { useNavigate } from 'react-router-dom'; // useNavigateをインポート
 
-import type { ImageFile } from '../contexts/VoucherContext';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
@@ -21,94 +19,79 @@ const ImageUpload = () => {
   const navigate = useNavigate();
 
   // 選択中の画像プレビューなど、この画面内でのみ使用するUI状態
-  const [selectedImage, setSelectedImage] = useState<{ name: string; url: string; file: File } | null>(null);
-  const [ocrResult, setOcrResult] = useState<string>('');
+  const [selectedImages, setSelectedImages] = useState<{ name: string; url: string; file: File }[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
 
     // Reset state for new upload
-    setSelectedImage(null);
-    setOcrResult('');
+    setSelectedImages([]);
     setError('');
-    
-    const processFile = (url: string) => {
-        setSelectedImage({ name: file.name, url, file });
-    };
 
-    if (file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        processFile(reader.result as string);
-        event.target.value = '';
-      };
-      reader.readAsDataURL(file);
-    } else if (file.type === 'application/pdf') {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        try {
-          const arrayBuffer = reader.result as ArrayBuffer;
-          const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-          const page = await pdf.getPage(1);
-          const viewport = page.getViewport({ scale: 1.5 });
+    const filePromises = Array.from(files).map(file => {
+      return new Promise<{ name: string; url: string; file: File }>((resolve, reject) => {
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            resolve({ name: file.name, url: reader.result as string, file });
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        } else if (file.type === 'application/pdf') {
+          const reader = new FileReader();
+          reader.onloadend = async () => {
+            try {
+              const arrayBuffer = reader.result as ArrayBuffer;
+              const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+              const page = await pdf.getPage(1);
+              const viewport = page.getViewport({ scale: 1.5 });
 
-          const canvas = document.createElement('canvas');
-          const context = canvas.getContext('2d');
-          if (!context) throw new Error('Failed to get canvas context');
-          canvas.height = viewport.height;
-          canvas.width = viewport.width;
+              const canvas = document.createElement('canvas');
+              const context = canvas.getContext('2d');
+              if (!context) throw new Error('Failed to get canvas context');
+              canvas.height = viewport.height;
+              canvas.width = viewport.width;
 
-          const renderTask = page.render({ canvasContext: context, viewport, canvas });
-          await renderTask.promise;
-          processFile(canvas.toDataURL());
-        } catch (pdfError) {
-          console.error('PDF processing error:', pdfError);
-          setError('PDFファイルのプレビュー生成に失敗しました。');
-        } finally {
-          event.target.value = '';
+              const renderTask = page.render({ canvasContext: context, viewport, canvas });
+              await renderTask.promise;
+              resolve({ name: file.name, url: canvas.toDataURL(), file });
+            } catch (pdfError) {
+              console.error('PDF processing error:', pdfError);
+              reject(new Error('PDFファイルのプレビュー生成に失敗しました。'));
+            }
+          };
+          reader.onerror = reject;
+          reader.readAsArrayBuffer(file);
+        } else {
+          reject(new Error('対応していないファイル形式です。'));
         }
-      };
-      reader.readAsArrayBuffer(file);
-    } else {
-      setError('対応していないファイル形式です。');
-      event.target.value = '';
-    }
+      });
+    });
+    
+    Promise.all(filePromises)
+      .then(newImages => {
+        setSelectedImages(prev => [...prev, ...newImages]);
+      })
+      .catch(err => {
+        setError(err.message);
+      });
+
+    event.target.value = '';
   };
 
   const handleUploadAndOcr = useCallback(async () => {
-    if (!selectedImage) {
+    if (selectedImages.length === 0) {
       setError('画像ファイルを選択してください。');
       return;
     }
 
     setIsLoading(true);
     setError('');
-    setOcrResult('');
 
     try {
-      // ダミーのOCR処理
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      const dummyText = `これはOCRで抽出されたテキストのサンプルです。\nファイル名: ${selectedImage.name}`;
-      setOcrResult(dummyText);
-
-      // Contextに新しい画像ファイルを追加
-      const fileType: ImageFile['fileType'] = selectedImage.file.type.includes('pdf') ? 'pdf' : 'image';
-
-      const newImageFile: ImageFile = {
-        id: uuidv4(),
-        name: selectedImage.name,
-        url: selectedImage.url,
-        file: selectedImage.file,
-        tags: [],
-        createdAt: new Date(),
-        fileType,
-        ocrText: dummyText,
-      };
-      addImageFile(newImageFile);
-
       // 成功したらVoucherListページに遷移
       navigate('/vouchers');
 
@@ -117,7 +100,7 @@ const ImageUpload = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedImage, addImageFile, navigate]);
+  }, [selectedImages, addImageFile, navigate]);
 
   return (
     <div className="container mx-auto p-4">
@@ -146,23 +129,31 @@ const ImageUpload = () => {
             accept="image/*,application/pdf"
             onChange={handleFileChange}
             className="hidden"
+            multiple // 複数ファイルの選択を許可
           />
            {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
         </div>
 
         {/* Step 2: Preview & OCR Execution */}
         {/* selectedFileが存在する場合のみこのセクションを表示 */}
-        {selectedImage && (
+        {selectedImages.length > 0 && (
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold mb-4 border-b pb-3">
               ステップ2: 内容確認と保存
             </h2>
-            <div className="p-4 border rounded-lg bg-gray-50 min-h-[300px] flex justify-center items-center mb-6">
-              <img
-                src={selectedImage.url}
-                alt="プレビュー"
-                className="max-h-80 w-auto object-contain"
-              />
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-4 border rounded-lg bg-gray-50 min-h-[300px] mb-6">
+              {selectedImages.map((image, index) => (
+                <div key={index} className="relative aspect-square border rounded-lg overflow-hidden">
+                  <img
+                    src={image.url}
+                    alt={`プレビュー ${index + 1}`}
+                    className="w-full h-full object-contain"
+                  />
+                   <p className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs text-center p-1 truncate">
+                    {image.name}
+                  </p>
+                </div>
+              ))}
             </div>
 
             <button
@@ -174,22 +165,6 @@ const ImageUpload = () => {
               <FileText className="w-5 h-5 mr-2" />
               {isLoading ? '処理中...' : 'OCRを実行して証票一覧に追加'}
             </button>
-
-            {/* Step 3: OCR Result */}
-            <div className="mt-8">
-              <h3 className="text-lg font-semibold mb-3">OCR結果</h3>
-              <div className="p-4 border rounded-lg bg-gray-50 min-h-[150px] whitespace-pre-wrap">
-                {ocrResult ? (
-                  <p className="text-gray-800">{ocrResult}</p>
-                ) : (
-                  <p className="text-gray-500">
-                    {isLoading
-                      ? 'テキストを抽出中です...'
-                      : 'ここにOCR結果が表示されます'}
-                  </p>
-                )}
-              </div>
-            </div>
           </div>
         )}
       </div>
