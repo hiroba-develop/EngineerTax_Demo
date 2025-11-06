@@ -12,6 +12,7 @@ import {
   MessageSquare,
   Camera,
   Menu,
+  FileArchive, // FileArchiveをインポート
 } from "lucide-react";
 
 import type { ReactNode } from 'react';
@@ -41,6 +42,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: "記事一覧", href: "/posts", icon: PenSquare, description: "記事の一覧" },
     { name: "相談チャット", href: "/chat", icon: MessageSquare, description: "税理士との相談チャット" },
     { name: "証票アップロード", href: "/image-upload", icon: Camera, description: "画像の文字起こしとタグ付け" },
+    { name: "証票管理", href: "/vouchers", icon: FileArchive, description: "登録済み証票の管理" }, // 新しいナビゲーション項目
   ];
 
   return (

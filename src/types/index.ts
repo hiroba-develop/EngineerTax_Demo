@@ -251,3 +251,15 @@ export interface SearchFilter {
   };
   isIncome?: boolean;
 }
+
+// 証票ファイル
+export interface Voucher {
+  id: string;
+  name: string;
+  url: string;
+  file?: File;
+  tags: string[];
+  createdAt: Date;
+  fileType: 'image' | 'pdf';
+  ocrText?: string;
+}

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer } from 'react';
 import type { ReactNode } from 'react';
+import { v4 as uuidv4 } from 'uuid'; // uuidをインポート
 import type {
   AnnualTask,
   Transaction,
@@ -8,8 +9,32 @@ import type {
   UserProfile,
   TaxReturnMode,
   TaskStatus,
-  ExpenseCategory
+  ExpenseCategory,
+  Voucher, // Voucherをインポート
 } from '../types';
+
+// デモ用の初期データ（VoucherList.tsxから移動）
+const initialVouchers: Voucher[] = [
+  {
+    id: uuidv4(),
+    name: 'サンプル領収書.png',
+    url: '/sample_receipt.png',
+    tags: ['領収書', '2025年'],
+    createdAt: new Date('2025-11-01T10:00:00Z'),
+    fileType: 'image',
+    ocrText: '領収書\n合計: 10,800円\n但し、品代として',
+  },
+  {
+    id: uuidv4(),
+    name: 'サンプル名刺.jpg',
+    url: '/sample_business_card.jpg',
+    tags: ['名刺', '取引先'],
+    createdAt: new Date('2025-10-15T14:30:00Z'),
+    fileType: 'image',
+    ocrText: '株式会社サンプル\n代表取締役 鈴木一郎',
+  },
+];
+const initialVoucherTags = ['領収書', '2025年', '名刺', '取引先'];
 
 // アプリケーションの状態
 interface AppState {
@@ -34,6 +59,10 @@ interface AppState {
   
   // 現在選択中の年度
   selectedYear: number;
+  
+  // 証票管理
+  vouchers: Voucher[];
+  voucherTags: string[];
 }
 
 // アクションの型
@@ -51,7 +80,15 @@ type AppAction =
   | { type: 'SET_TAX_CALCULATION'; payload: TaxCalculationResult }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
-  | { type: 'SET_SELECTED_YEAR'; payload: number };
+  | { type: 'SET_SELECTED_YEAR'; payload: number }
+  // 証票アクション
+  | { type: 'ADD_VOUCHER'; payload: Voucher }
+  | { type: 'UPDATE_VOUCHER_TAGS'; payload: { id: string; tags: string[] } }
+  | { type: 'DELETE_VOUCHER'; payload: string }
+  // タグアクション
+  | { type: 'ADD_VOUCHER_TAG'; payload: string }
+  | { type: 'UPDATE_VOUCHER_TAG'; payload: { oldTag: string; newTag: string } }
+  | { type: 'DELETE_VOUCHER_TAG'; payload: string };
 
 // 初期状態
 const initialState: AppState = {
@@ -73,6 +110,8 @@ const initialState: AppState = {
   isLoading: false,
   error: null,
   selectedYear: new Date().getFullYear(),
+  vouchers: initialVouchers, // 追加
+  voucherTags: initialVoucherTags, // 追加
 };
 
 // リデューサー
@@ -143,6 +182,55 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
     case 'SET_SELECTED_YEAR':
       return { ...state, selectedYear: action.payload };
       
+    // 証票関連のレデューサーロジック
+    case 'ADD_VOUCHER':
+      return { ...state, vouchers: [action.payload, ...state.vouchers] };
+      
+    case 'UPDATE_VOUCHER_TAGS':
+      return {
+        ...state,
+        vouchers: state.vouchers.map(v =>
+          v.id === action.payload.id ? { ...v, tags: action.payload.tags } : v
+        ),
+      };
+
+    case 'DELETE_VOUCHER':
+      return {
+        ...state,
+        vouchers: state.vouchers.filter(v => v.id !== action.payload),
+      };
+      
+    case 'ADD_VOUCHER_TAG':
+      if (state.voucherTags.includes(action.payload)) return state;
+      return {
+        ...state,
+        voucherTags: [...state.voucherTags, action.payload].sort(),
+      };
+      
+    case 'UPDATE_VOUCHER_TAG':
+      return {
+        ...state,
+        voucherTags: state.voucherTags.map(t =>
+          t === action.payload.oldTag ? action.payload.newTag : t
+        ).sort(),
+        vouchers: state.vouchers.map(v => ({
+          ...v,
+          tags: v.tags.map(t =>
+            t === action.payload.oldTag ? action.payload.newTag : t
+          ),
+        })),
+      };
+      
+    case 'DELETE_VOUCHER_TAG':
+      return {
+        ...state,
+        voucherTags: state.voucherTags.filter(t => t !== action.payload),
+        vouchers: state.vouchers.map(v => ({
+          ...v,
+          tags: v.tags.filter(t => t !== action.payload),
+        })),
+      };
+      
     default:
       return state;
   }
@@ -162,6 +250,13 @@ interface AppContextType {
   getCompletedTasksCount: () => number;
   getTotalTasksCount: () => number;
   changeTaxReturnMode: (mode: TaxReturnMode) => void;
+  // 証票ヘルパー関数
+  addVoucher: (voucher: Omit<Voucher, 'id' | 'createdAt'>) => Voucher;
+  updateVoucherTags: (voucherId: string, tags: string[]) => void;
+  deleteVoucher: (voucherId: string) => void;
+  addVoucherTag: (tag: string) => void;
+  updateVoucherTag: (oldTag: string, newTag: string) => void;
+  deleteVoucherTag: (tag: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -237,6 +332,37 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     console.log(`税務申告モードを${mode === 'blue' ? '青色申告' : '白色申告'}に変更しました`);
   };
 
+  // 証票管理ヘルパー
+  const addVoucher = (voucherData: Omit<Voucher, 'id' | 'createdAt'>): Voucher => {
+    const newVoucher: Voucher = {
+      ...voucherData,
+      id: uuidv4(),
+      createdAt: new Date(),
+    };
+    dispatch({ type: 'ADD_VOUCHER', payload: newVoucher });
+    return newVoucher;
+  };
+
+  const updateVoucherTags = (voucherId: string, tags: string[]) => {
+    dispatch({ type: 'UPDATE_VOUCHER_TAGS', payload: { id: voucherId, tags } });
+  };
+  
+  const deleteVoucher = (voucherId: string) => {
+    dispatch({ type: 'DELETE_VOUCHER', payload: voucherId });
+  };
+
+  const addVoucherTag = (tag: string) => {
+    dispatch({ type: 'ADD_VOUCHER_TAG', payload: tag });
+  };
+  
+  const updateVoucherTag = (oldTag: string, newTag: string) => {
+    dispatch({ type: 'UPDATE_VOUCHER_TAG', payload: { oldTag, newTag } });
+  };
+
+  const deleteVoucherTag = (tag: string) => {
+    dispatch({ type: 'DELETE_VOUCHER_TAG', payload: tag });
+  };
+
   const contextValue: AppContextType = {
     state,
     dispatch,
@@ -248,6 +374,13 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     getCompletedTasksCount,
     getTotalTasksCount,
     changeTaxReturnMode,
+    // 証票ヘルパーを追加
+    addVoucher,
+    updateVoucherTags,
+    deleteVoucher,
+    addVoucherTag,
+    updateVoucherTag,
+    deleteVoucherTag,
   };
 
   return (

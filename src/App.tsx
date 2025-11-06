@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { AppProvider } from "./contexts/AppContext";
+import { VoucherProvider } from "./contexts/VoucherContext"; // 追加
 import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
@@ -17,6 +18,7 @@ import PostShow from "./pages/PostShow";
 import PostList from "./pages/PostList";
 import Chat from "./pages/Chat";
 import ImageUpload from "./pages/ImageUpload";
+import VoucherList from "./pages/VoucherList"; // 新しく追加
 import { useEffect } from "react";
 
 // 認証不要運用のため、ProtectedRouteは撤廃
@@ -137,6 +139,16 @@ const AppContent: React.FC = () => {
           </RequireLogin>
         }
       />
+      <Route // 新しいルートを追加
+        path="/vouchers"
+        element={
+          <RequireLogin>
+            <Layout>
+              <VoucherList />
+            </Layout>
+          </RequireLogin>
+        }
+      />
       {/* 収支管理/税金シミュレーター/手順ナビ/AIチャット ルートは削除 */}
       <Route
         path="/settings"
@@ -159,9 +171,11 @@ function App() {
   return (
     <AuthProvider>
       <AppProvider>
-        <Router basename={basename}>
-          <AppContent />
-        </Router>
+        <VoucherProvider> {/* 追加 */}
+          <Router basename={basename}>
+            <AppContent />
+          </Router>
+        </VoucherProvider> {/* 追加 */}
       </AppProvider>
     </AuthProvider>
   );
