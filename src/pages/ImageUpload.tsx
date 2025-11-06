@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import {
   UploadCloud,
   FileText,
@@ -6,6 +7,7 @@ import {
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
 import pdfjsWorker from 'pdfjs-dist/legacy/build/pdf.worker?worker&url';
 import { useVouchers } from '../contexts/VoucherContext'; // useVouchersをインポート
+import type { ImageFile } from '../contexts/VoucherContext';
 import { useNavigate } from 'react-router-dom'; // useNavigateをインポート
 
 
@@ -73,7 +75,7 @@ const ImageUpload = () => {
     
     Promise.all(filePromises)
       .then(newImages => {
-        setSelectedImages(prev => [...prev, ...newImages]);
+        setSelectedImages(newImages);
       })
       .catch(err => {
         setError(err.message);
@@ -92,8 +94,34 @@ const ImageUpload = () => {
     setError('');
 
     try {
-      // 成功したらVoucherListページに遷移
-      navigate('/vouchers');
+      const addedImageIds = await Promise.all(
+        selectedImages.map(async image => {
+          // ダミーOCR処理の代替として待機
+          await new Promise(resolve => setTimeout(resolve, 1500));
+
+          const fileType: ImageFile['fileType'] = image.file.type.includes('pdf') ? 'pdf' : 'image';
+          const newImageFile: ImageFile = {
+            id: uuidv4(),
+            name: image.name,
+            url: image.url,
+            file: image.file,
+            tags: [],
+            createdAt: new Date(),
+            fileType,
+            ocrText: `これはOCRで抽出されたテキストのサンプルです。\nファイル名: ${image.name}`,
+          };
+
+          addImageFile(newImageFile);
+          return newImageFile.id;
+        }),
+      );
+
+      setSelectedImages([]);
+
+      // 成功したらVoucherListページに遷移し、追加したIDを渡す
+      navigate('/vouchers', {
+        state: { recentlyAddedImageIds: addedImageIds },
+      });
 
     } catch (err) {
       setError('OCR処理中にエラーが発生しました。');

@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   FileText,
   Trash2,
@@ -26,6 +27,9 @@ const VoucherList = () => {
     updateManagedTag,
   } = useVouchers();
 
+  const location = useLocation();
+  const navigate = useNavigate();
+
   // ローカルで管理するUI状態
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
   const [filterTag, setFilterTag] = useState<string>('');
@@ -35,6 +39,25 @@ const VoucherList = () => {
     newValue: string;
   } | null>(null);
   const [newTagInput, setNewTagInput] = useState('');
+  const [highlightedImageIds, setHighlightedImageIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    const state = location.state as { recentlyAddedImageIds?: string[] } | undefined;
+    if (state?.recentlyAddedImageIds && state.recentlyAddedImageIds.length > 0) {
+      setFilterTag('');
+      setSelectedImageId(state.recentlyAddedImageIds[0]);
+      setHighlightedImageIds(state.recentlyAddedImageIds);
+      navigate(location.pathname, { replace: true, state: undefined });
+    }
+  }, [location.state, location.pathname, navigate]);
+
+  useEffect(() => {
+    if (highlightedImageIds.length === 0) return;
+    const timeoutId = window.setTimeout(() => {
+      setHighlightedImageIds([]);
+    }, 3000);
+    return () => window.clearTimeout(timeoutId);
+  }, [highlightedImageIds]);
 
   const processedImages = useMemo(() => {
     let images = [...imageList]; // グローバルなvouchersを使用
@@ -208,10 +231,15 @@ const VoucherList = () => {
 
             {/* Vouchers List */}
             <div className="space-y-4">
-              {processedImages.map(image => (
+              {processedImages.map(image => {
+                const isSelected = selectedImageId === image.id;
+                const isHighlighted = highlightedImageIds.includes(image.id);
+                const cardClassName = `bg-white rounded-lg shadow-md transition-all duration-300 ease-in-out overflow-hidden ${isSelected ? 'ring-2 ring-orange-500' : isHighlighted ? 'ring-2 ring-green-400' : 'hover:shadow-lg'}`;
+
+                return (
                 <div
                   key={image.id}
-                  className={`bg-white rounded-lg shadow-md transition-all duration-300 ease-in-out overflow-hidden ${selectedImageId === image.id ? 'ring-2 ring-orange-500' : 'hover:shadow-lg'}`}
+                  className={cardClassName}
                 >
                   <button
                     type="button"
@@ -233,11 +261,11 @@ const VoucherList = () => {
                         ))}
                       </div>
                     </div>
-                    <ChevronRight className={`w-6 h-6 text-gray-400 transition-transform ${selectedImageId === image.id ? 'transform rotate-90' : ''}`} />
+                    <ChevronRight className={`w-6 h-6 text-gray-400 transition-transform ${isSelected ? 'transform rotate-90' : ''}`} />
                   </button>
 
                   {/* Expanded View */}
-                  {selectedImageId === image.id && (
+                  {isSelected && (
                     <div className="border-t border-gray-200 p-4 bg-gray-50">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* OCR Text */}
@@ -305,7 +333,8 @@ const VoucherList = () => {
                     </div>
                   )}
                 </div>
-              ))}
+              );
+              })}
             </div>
         </div>
       </div>
