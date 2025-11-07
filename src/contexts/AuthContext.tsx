@@ -26,11 +26,10 @@ interface User {
 }
 
 // 一般ユーザーペルソナ型定義
-interface Persona {
-  ageGroup: string; // 年代: 例 "20代", "30代" など
-  sideJobStartYear: number; // 副業開始年
-  annualIncome: number; // 年間の収入（数値）
-  taxKnowledgeLevel: number; // 税知識 1-5
+interface BasicInfo {
+  ageGroup: string; // 年齢区分
+  sideJobCategory: string; // 副業区分
+  expectedSideIncome: string; // 副業収入見込み
 }
 
 // 認証コンテキストの型定義
@@ -40,11 +39,11 @@ interface AuthContextType {
   shouldRedirectToLogin: boolean;
   shouldRedirectToSetup: boolean;
   role: number; // 1: 管理者, 0: 一般
-  persona: Persona | null;
+  basicInfo: BasicInfo | null;
   tickets: number;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
-  savePersona: (value: Persona) => void;
+  saveBasicInfo: (value: BasicInfo) => void;
   consumeTicketForEmail: (email: string) => number;
 }
 
@@ -57,7 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [shouldRedirectToLogin, setShouldRedirectToLogin] = useState(false);
   const [shouldRedirectToSetup, setShouldRedirectToSetup] = useState(false);
-  const [persona, setPersona] = useState<Persona | null>(null);
+  const [basicInfo, setBasicInfo] = useState<BasicInfo | null>(null);
   const [role, setRole] = useState<number>(0);
   const [tickets, setTickets] = useState<number>(0);
 
@@ -84,13 +83,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setRole(roleCookie === "1" ? 1 : 0);
 
     // ペルソナ取得
-    const personaCookie = getCookie("persona");
-    if (personaCookie) {
+    const basicInfoCookie = getCookie("basicInfo");
+    if (basicInfoCookie) {
       try {
-        const parsedPersona: Persona = JSON.parse(decodeURIComponent(personaCookie));
-        setPersona(parsedPersona);
+        const parsedBasicInfo: BasicInfo = JSON.parse(decodeURIComponent(basicInfoCookie));
+        setBasicInfo(parsedBasicInfo);
       } catch {
-        deleteCookie("persona");
+        deleteCookie("basicInfo");
       }
     }
 
@@ -169,19 +168,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // roleクッキーを削除
     document.cookie = "role=; path=/; Max-Age=0; SameSite=Lax";
     // ペルソナも削除
-    deleteCookie("persona");
+    deleteCookie("basicInfo");
     // チケットCookieも削除（localStorageは保持）
     deleteCookie("tickets");
     setUser(null);
-    setPersona(null);
+    setBasicInfo(null);
     setRole(0);
     setTickets(0);
     setShouldRedirectToLogin(true);
   };
 
-  const savePersona = (value: Persona) => {
-    setCookie("persona", encodeURIComponent(JSON.stringify(value)), 60 * 60 * 24 * 365);
-    setPersona(value);
+  const saveBasicInfo = (value: BasicInfo) => {
+    setCookie("basicInfo", encodeURIComponent(JSON.stringify(value)), 60 * 60 * 24 * 365);
+    setBasicInfo(value);
   };
 
   // 管理者が相談完了としてチケット消費。または一般ユーザー自身の反映
@@ -205,11 +204,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         shouldRedirectToLogin,
         shouldRedirectToSetup,
         role,
-        persona,
+        basicInfo,
         tickets,
         login,
         logout,
-        savePersona,
+        saveBasicInfo,
         consumeTicketForEmail,
       }}
     >

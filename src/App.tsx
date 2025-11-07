@@ -12,7 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Persona from "./pages/Persona";
+import BasicInfo from "./pages/BasicInfo";
 import PostNew from "./pages/PostNew";
 import PostShow from "./pages/PostShow";
 import PostList from "./pages/PostList";
@@ -82,11 +82,11 @@ const AppContent: React.FC = () => {
         }
       />
       <Route
-        path="/persona"
+        path="/basicInfo"
         element={
           <RequireLogin>
             <Layout>
-              <Persona />
+              <BasicInfo />
             </Layout>
           </RequireLogin>
         }

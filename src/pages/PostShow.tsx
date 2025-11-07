@@ -43,7 +43,7 @@ const PostShow = () => {
         <div className="p-4 border border-red-200 bg-red-50 rounded-lg text-red-700 text-sm mb-4">
           記事が見つかりませんでした。
         </div>
-        <button onClick={() => navigate('/posts/new')} className="px-4 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600">新規投稿へ</button>
+        <button onClick={() => navigate('/posts/new')} className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600">新規投稿へ</button>
       </div>
     );
   }

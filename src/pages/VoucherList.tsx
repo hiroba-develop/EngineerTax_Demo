@@ -146,11 +146,11 @@ const VoucherList = () => {
                 value={newTagInput}
                 onChange={e => setNewTagInput(e.target.value)}
                 placeholder="新規タグ名"
-                className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
                 type="submit"
-                className="p-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:bg-gray-300"
+                className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300"
                 disabled={!newTagInput.trim()}
                 aria-label="新しいタグを追加"
               >
@@ -168,7 +168,7 @@ const VoucherList = () => {
                       onChange={e =>
                         setEditingTag({ ...editingTag, newValue: e.target.value })
                       }
-                      className="w-full px-2 py-1 border border-orange-500 rounded-lg text-sm focus:outline-none"
+                      className="w-full px-2 py-1 border border-blue-500 rounded-lg text-sm focus:outline-none"
                       autoFocus
                     />
                   ) : (
@@ -202,14 +202,14 @@ const VoucherList = () => {
                         <input
                             type="text"
                             placeholder="キーワード検索..."
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     </div>
                     <select
                         value={filterTag}
                         onChange={e => setFilterTag(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                         <option value="">すべてのタグ</option>
                         {managedTags.map(tag => (
@@ -219,7 +219,7 @@ const VoucherList = () => {
                     <select
                         value={sortOrder}
                         onChange={e => setSortOrder(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                         <option value="date_desc">アップロード日 (新しい順)</option>
                         <option value="date_asc">アップロード日 (古い順)</option>
@@ -234,7 +234,7 @@ const VoucherList = () => {
               {processedImages.map(image => {
                 const isSelected = selectedImageId === image.id;
                 const isHighlighted = highlightedImageIds.includes(image.id);
-                const cardClassName = `bg-white rounded-lg shadow-md transition-all duration-300 ease-in-out overflow-hidden ${isSelected ? 'ring-2 ring-orange-500' : isHighlighted ? 'ring-2 ring-green-400' : 'hover:shadow-lg'}`;
+                const cardClassName = `bg-white rounded-lg shadow-md transition-all duration-300 ease-in-out overflow-hidden ${isSelected ? 'ring-2 ring-blue-500' : isHighlighted ? 'ring-2 ring-green-400' : 'hover:shadow-lg'}`;
 
                 return (
                 <div
@@ -308,7 +308,7 @@ const VoucherList = () => {
                                     }}
                                     className="flex items-center gap-2"
                                 >
-                                    <select name="newTag" defaultValue="" className="flex-grow px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500">
+                                    <select name="newTag" defaultValue="" className="flex-grow px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                                         <option value="" disabled>タグを選択...</option>
                                         {managedTags.filter(t => !image.tags.includes(t)).map(tag => (
                                             <option key={tag} value={tag}>{tag}</option>

@@ -2,33 +2,27 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 
 const Settings = () => {
-  const { user, role, persona, savePersona } = useAuth();
+  const { user, role, basicInfo, saveBasicInfo } = useAuth();
   const [notificationEnabled, setNotificationEnabled] = useState(true);
-  const [darkModeEnabled, setDarkModeEnabled] = useState(false);
-  const [language, setLanguage] = useState("ja");
   const [successMessage, setSuccessMessage] = useState("");
-  // ペルソナ（一般ユーザーのみ編集可）
   const [ageGroup, setAgeGroup] = useState("");
-  const [sideJobStartYear, setSideJobStartYear] = useState("");
-  const [annualIncome, setAnnualIncome] = useState("");
-  const [taxKnowledgeLevel, setTaxKnowledgeLevel] = useState("3");
+  const [sideJobCategory, setSideJobCategory] = useState("");
+  const [expectedSideIncome, setExpectedSideIncome] = useState("");
 
   useEffect(() => {
-    if (persona) {
-      setAgeGroup(persona.ageGroup ?? "");
-      setSideJobStartYear((persona.sideJobStartYear ?? "").toString());
-      setAnnualIncome((persona.annualIncome ?? "").toString());
-      setTaxKnowledgeLevel((persona.taxKnowledgeLevel ?? 3).toString());
+    if (basicInfo) {
+      setAgeGroup(basicInfo.ageGroup ?? "");
+      setSideJobCategory(basicInfo.sideJobCategory ?? "");
+      setExpectedSideIncome(basicInfo.expectedSideIncome ?? "");
+      return;
     }
-  }, [persona]);
+  }, [basicInfo]);
 
   // 設定保存処理
   const saveSettings = () => {
     // 実際のアプリではAPIリクエストを行う
     console.log("設定を保存:", {
       notificationEnabled,
-      darkModeEnabled,
-      language,
     });
 
     // 成功メッセージを表示
@@ -36,11 +30,10 @@ const Settings = () => {
 
     // 一般ユーザー（role=0）のみペルソナ更新
     if (role === 0) {
-      savePersona({
+      saveBasicInfo({
         ageGroup,
-        sideJobStartYear: Number(sideJobStartYear) || new Date().getFullYear(),
-        annualIncome: Number(annualIncome) || 0,
-        taxKnowledgeLevel: Number(taxKnowledgeLevel) || 3,
+        sideJobCategory,
+        expectedSideIncome,
       });
     }
 
@@ -125,77 +118,58 @@ const Settings = () => {
                   className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50"
                 />
               </div>
+              {role === 0 && (
+                <>
+                  <div className="col-span-6 sm:col-span-3">
+                    <label className="block text-sm font-medium text-gray-700">年齢区分</label>
+                    <select
+                      className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      value={ageGroup}
+                      onChange={(e) => setAgeGroup(e.target.value)}
+                    >
+                      <option value="">選択してください</option>
+                      <option value="1">〜20代</option>
+                      <option value="2">30代</option>
+                      <option value="3">40代</option>
+                      <option value="4">50代〜</option>
+                    </select>
+                  </div>
+                  <div className="col-span-6 sm:col-span-3">
+                    <label className="block text-sm font-medium text-gray-700">副業区分</label>
+                    <select
+                      className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      value={sideJobCategory}
+                      onChange={(e) => setSideJobCategory(e.target.value)}
+                    >
+                      <option value="">選択してください</option>
+                      <option value="1">Web／アプリ開発</option>
+                      <option value="2">インフラ・クラウド</option>
+                      <option value="3">デザイン</option>
+                      <option value="4">コンサル／業務委託</option>
+                    </select>
+                  </div>
+                  <div className="col-span-6 sm:col-span-3">
+                    <label className="block text-sm font-medium text-gray-700">副業収入見込み</label>
+                    <select
+                      className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      value={expectedSideIncome}
+                      onChange={(e) => setExpectedSideIncome(e.target.value)}
+                    >
+                      <option value="">選択してください</option>
+                      <option value="1">〜10万円</option>
+                      <option value="2">10〜50万円</option>
+                      <option value="3">50〜100万円</option>
+                      <option value="4">100〜300万円</option>
+                      <option value="5">300万円以上</option>
+                    </select>
+                  </div>
+                </>
+              )}
+              
             </div>
           </div>
         </div>
       </div>
-
-      {/* 一般ユーザー向けペルソナ編集 */}
-      {role === 0 && (
-        <div className="mt-10 bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
-          <div className="md:grid md:grid-cols-3 md:gap-6">
-            <div className="md:col-span-1">
-              <h3 className="text-lg font-medium leading-6 text-gray-900">ペルソナ</h3>
-              <p className="mt-1 text-sm text-gray-500">一般ユーザーはいつでも更新できます。</p>
-            </div>
-            <div className="mt-5 md:mt-0 md:col-span-2">
-              <div className="grid grid-cols-6 gap-6">
-                <div className="col-span-6 sm:col-span-3">
-                  <label className="block text-sm font-medium text-gray-700">年代</label>
-                  <select
-                    className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    value={ageGroup}
-                    onChange={(e) => setAgeGroup(e.target.value)}
-                  >
-                    <option value="">選択してください</option>
-                    <option value="20代">20代</option>
-                    <option value="30代">30代</option>
-                    <option value="40代">40代</option>
-                    <option value="50代">50代</option>
-                    <option value="60代以上">60代以上</option>
-                  </select>
-                </div>
-                <div className="col-span-6 sm:col-span-3">
-                  <label className="block text-sm font-medium text-gray-700">副業開始年</label>
-                  <input
-                    type="number"
-                    className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    value={sideJobStartYear}
-                    onChange={(e) => setSideJobStartYear(e.target.value)}
-                    min="1980"
-                    max={new Date().getFullYear().toString()}
-                  />
-                </div>
-                <div className="col-span-6 sm:col-span-3">
-                  <label className="block text-sm font-medium text-gray-700">年間の収入（円）</label>
-                  <input
-                    type="number"
-                    className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    value={annualIncome}
-                    onChange={(e) => setAnnualIncome(e.target.value)}
-                    min="0"
-                    step="10000"
-                  />
-                </div>
-                <div className="col-span-6 sm:col-span-3">
-                  <label className="block text-sm font-medium text-gray-700">税金についての知識量（1〜5）</label>
-                  <select
-                    className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    value={taxKnowledgeLevel}
-                    onChange={(e) => setTaxKnowledgeLevel(e.target.value)}
-                  >
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       <div className="mt-10 bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
         <div className="md:grid md:grid-cols-3 md:gap-6">
@@ -233,50 +207,6 @@ const Settings = () => {
                     アプリからの通知を受け取るかどうかを設定します。
                   </p>
                 </div>
-              </div>
-
-              <div className="flex items-start">
-                <div className="flex items-center h-5">
-                  <input
-                    id="darkMode"
-                    name="darkMode"
-                    type="checkbox"
-                    checked={darkModeEnabled}
-                    onChange={() => setDarkModeEnabled(!darkModeEnabled)}
-                    className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
-                  />
-                </div>
-                <div className="ml-3 text-sm">
-                  <label
-                    htmlFor="darkMode"
-                    className="font-medium text-gray-700"
-                  >
-                    ダークモード
-                  </label>
-                  <p className="text-gray-500">
-                    アプリのテーマをダークモードに切り替えます。
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="language"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  言語
-                </label>
-                <select
-                  id="language"
-                  name="language"
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
-                  className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                >
-                  <option value="ja">日本語</option>
-                  <option value="en">English</option>
-                  <option value="zh">中文</option>
-                </select>
               </div>
             </div>
           </div>

@@ -143,7 +143,7 @@ const ImageUpload = () => {
           </h2>
           <label
             htmlFor="image-upload"
-            className="w-full mb-4 flex flex-col items-center justify-center px-6 py-10 bg-orange-50 text-orange-700 font-semibold rounded-lg cursor-pointer hover:bg-orange-100 border-2 border-dashed border-orange-200"
+            className="w-full mb-4 flex flex-col items-center justify-center px-6 py-10 bg-blue-50 text-blue-700 font-semibold rounded-lg cursor-pointer hover:bg-blue-100 border-2 border-dashed border-blue-200"
           >
             <UploadCloud className="w-10 h-10 mb-3" />
             <span className="text-lg">
@@ -188,7 +188,7 @@ const ImageUpload = () => {
               type="button"
               onClick={handleUploadAndOcr}
               disabled={isLoading}
-              className="w-full px-4 py-3 bg-orange-600 text-white font-semibold rounded-lg shadow-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-75 disabled:bg-gray-400 flex items-center justify-center text-base"
+              className="w-full px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 disabled:bg-gray-400 flex items-center justify-center text-base"
             >
               <FileText className="w-5 h-5 mr-2" />
               {isLoading ? '処理中...' : 'OCRを実行して証票一覧に追加'}

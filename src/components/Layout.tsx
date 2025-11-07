@@ -56,7 +56,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className="flex items-center space-x-3">
               {/* ブランド */}
               <div className="flex items-center">
-                <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
                   <Wallet className="w-6 h-6 text-white" />
                 </div>
                 <div className="ml-3">
@@ -72,11 +72,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               {user ? (
                 <div className="relative hidden md:block">
                   <button
-                    className="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                    className="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   >
-                    <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
-                      <User className="w-4 h-4 text-orange-600" />
+                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                      <User className="w-4 h-4 text-blue-600" />
                     </div>
                     <ChevronDown className="ml-1 h-4 w-4 text-gray-400" />
                   </button>
@@ -106,13 +106,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <div className="hidden md:flex items-center space-x-3">
                   <button
                     onClick={() => navigate('/login')}
-                    className="px-4 py-2 rounded-full border border-orange-500 text-black text-sm font-semibold hover:bg-orange-50"
+                    className="px-4 py-2 rounded-full border border-blue-500 text-black text-sm font-semibold hover:bg-blue-50"
                   >
                     ログイン
                   </button>
                   <button
                 onClick={() => navigate('/register')}
-                    className="px-4 py-2 rounded-full bg-orange-500 text-white text-sm font-semibold hover:bg-orange-600"
+                    className="px-4 py-2 rounded-full bg-blue-500 text-white text-sm font-semibold hover:bg-blue-600"
                   >
                     無料で始める
                   </button>
@@ -123,7 +123,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <div className="md:hidden">
                 <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  className="inline-flex items-center justify-center w-10 h-10 rounded-full text-black hover:text-orange-600 focus:outline-none"
+                  className="inline-flex items-center justify-center w-10 h-10 rounded-full text-black hover:text-blue-600 focus:outline-none"
                 >
                   <Menu className="w-6 h-6" />
                 </button>
@@ -143,12 +143,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       to={item.href}
                       className={`inline-flex items-center whitespace-nowrap px-2 py-1.5 rounded-md ${
                         isActive
-                          ? 'text-orange-600'
-                          : 'text-black hover:text-orange-600'
+                          ? 'text-blue-600'
+                          : 'text-black hover:text-blue-600'
                       }`}
                       title={item.description}
                     >
-                      <item.icon className={`mr-2 h-5 w-5 ${isActive ? 'text-orange-600' : 'text-gray-400'}`} />
+                      <item.icon className={`mr-2 h-5 w-5 ${isActive ? 'text-blue-600' : 'text-gray-400'}`} />
                       <span className="font-medium">{item.name}</span>
                     </Link>
                   );
@@ -157,7 +157,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </div>
             {user && role === 1 && (
               <div className="ml-4">
-                <button onClick={() => navigate('/posts/new')} className="inline-flex items-center px-4 py-2 rounded-full border border-gray-300 hover:border-orange-500 text-black hover:text-orange-600 bg-white shadow-sm">
+                <button onClick={() => navigate('/posts/new')} className="inline-flex items-center px-4 py-2 rounded-full border border-gray-300 hover:border-blue-500 text-black hover:text-blue-600 bg-white shadow-sm">
                   <PenSquare className="w-5 h-5 mr-2" />
                   投稿する
                 </button>
@@ -176,11 +176,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       to={item.href}
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={`flex items-center px-3 py-2 rounded-md text-base font-medium ${
-                        isActive ? 'bg-orange-50' : 'hover:bg-gray-50'
+                        isActive ? 'bg-blue-50' : 'hover:bg-gray-50'
                       }`}
                     >
-                      <item.icon className={`mr-3 h-6 w-6 ${isActive ? 'text-orange-600' : 'text-gray-400'}`} />
-                      <span className={`font-medium ${isActive ? 'text-orange-600' : 'text-black'}`}>
+                      <item.icon className={`mr-3 h-6 w-6 ${isActive ? 'text-blue-600' : 'text-gray-400'}`} />
+                      <span className={`font-medium ${isActive ? 'text-blue-600' : 'text-black'}`}>
                         {item.name}
                       </span>
                     </Link>
@@ -231,7 +231,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         navigate('/login');
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full px-4 py-2 rounded-full border border-orange-500 text-black text-sm font-semibold hover:bg-orange-50"
+                      className="w-full px-4 py-2 rounded-full border border-blue-500 text-black text-sm font-semibold hover:bg-blue-50"
                     >
                       ログイン
                     </button>
@@ -240,7 +240,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         navigate('/register');
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full px-4 py-2 rounded-full bg-orange-500 text-white text-sm font-semibold hover:bg-orange-600"
+                      className="w-full px-4 py-2 rounded-full bg-blue-500 text-white text-sm font-semibold hover:bg-blue-600"
                     >
                       無料で始める
                     </button>

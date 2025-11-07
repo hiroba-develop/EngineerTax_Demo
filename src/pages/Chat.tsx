@@ -81,7 +81,7 @@ const Chat = () => {
           <input
             type="email"
             placeholder="user@example.com"
-            className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={targetEmail}
             onChange={(e) => setTargetEmail(e.target.value)}
           />
@@ -93,7 +93,7 @@ const Chat = () => {
         <div className="flex-1 overflow-y-auto space-y-3">
           {messages.map((m) => (
             <div key={m.id} className={`max-w-[80%] ${m.from === "user" ? "self-start" : "self-end"}`}>
-              <div className={`px-3 py-2 rounded-lg text-sm ${m.from === "user" ? "bg-gray-100 text-[#363427]" : "bg-orange-500 text-white"}`}>
+              <div className={`px-3 py-2 rounded-lg text-sm ${m.from === "user" ? "bg-gray-100 text-[#363427]" : "bg-blue-500 text-white"}`}>
                 <div className="opacity-60 text-[10px] mb-1">{m.from === "user" ? "ユーザー" : "管理者"}</div>
                 <div>{m.content}</div>
               </div>
@@ -105,20 +105,20 @@ const Chat = () => {
           <input
             type="text"
             placeholder="メッセージを入力"
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={input}
             onChange={(e) => setInput(e.target.value)}
           />
           <button
             onClick={send}
-            className="px-4 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600"
+            className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600"
           >
             送信
           </button>
           {role === 1 && (
             <button
               onClick={markResolvedAndConsume}
-              className="px-4 py-2 rounded-lg border border-gray-300 text-[#363427] hover:border-orange-500 hover:text-orange-600"
+              className="px-4 py-2 rounded-lg border border-gray-300 text-[#363427] hover:border-blue-500 hover:text-blue-600"
             >
               相談完了にする（1枚消費）
             </button>

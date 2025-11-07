@@ -52,7 +52,7 @@ const Dashboard: React.FC = () => {
       <div className="bg-white rounded-lg shadow-sm">
         <div className="p-6 border-b border-gray-200 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-[#363427]">最近の投稿</h2>
-          <Link to="/posts" className="text-sm text-orange-600 hover:underline">すべて見る</Link>
+          <Link to="/posts" className="text-sm text-blue-600 hover:underline">すべて見る</Link>
         </div>
           <div className="p-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -6,6 +6,7 @@ import { Wallet, Mail, Lock, UserPlus, CheckCircle, AlertTriangle } from "lucide
 
 const Register = () => {
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
@@ -40,7 +41,7 @@ const Register = () => {
       if (success) {
         // 一般ユーザーはペルソナページへ遷移
         if (!isAdminDomain) {
-          navigate("/persona");
+          navigate("/basicInfo");
           return;
         }
         // 管理者はダッシュボードへ
@@ -61,7 +62,7 @@ const Register = () => {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="flex justify-center">
-            <div className="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center mb-6">
+            <div className="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mb-6">
               <Wallet className="w-10 h-10 text-white" />
             </div>
           </div>
@@ -91,10 +92,24 @@ const Register = () => {
                 <input
                   type="email"
                   required
-                  className="appearance-none relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-400 text-[#363427] rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="appearance-none relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-400 text-[#363427] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="your@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#363427] mb-2">ユーザー名</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  required
+                  className="appearance-none relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-400 text-[#363427] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="エンジニア 太郎"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </div>
             </div>
@@ -108,7 +123,7 @@ const Register = () => {
                 <input
                   type="password"
                   required
-                  className="appearance-none relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-400 text-[#363427] rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="appearance-none relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-400 text-[#363427] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="パスワードを入力"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -125,7 +140,7 @@ const Register = () => {
                 <input
                   type="password"
                   required
-                  className="appearance-none relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-400 text-[#363427] rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="appearance-none relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-400 text-[#363427] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="もう一度入力"
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
@@ -137,7 +152,7 @@ const Register = () => {
               type="submit"
               disabled={isLoading}
               className={`group relative w-full flex justify-center py-3 px-4 text-sm font-medium rounded-lg text-white transition-all ${
-                isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600'
+                isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
               }`}
             >
               <span className="flex items-center">
@@ -150,7 +165,7 @@ const Register = () => {
           <div className="mt-6 text-center">
             <button
               onClick={() => navigate('/login')}
-              className="inline-flex items-center text-sm text-orange-600 hover:text-orange-700"
+              className="inline-flex items-center text-sm text-blue-600 hover:text-blue-700"
             >
               <CheckCircle className="w-4 h-4 mr-1" /> 既にアカウントをお持ちの方はこちら
             </button>
