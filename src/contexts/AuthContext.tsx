@@ -25,7 +25,7 @@ interface User {
   isSetupComplete: boolean;
 }
 
-// 一般ユーザーペルソナ型定義
+// 基本情報定義
 interface BasicInfo {
   ageGroup: string; // 年齢区分
   sideJobCategory: string; // 副業区分
@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [role, setRole] = useState<number>(0);
   const [tickets, setTickets] = useState<number>(0);
 
-  // 初期化時にCookieからユーザー情報/ロール/ペルソナを取得
+  // 初期化時にCookieからユーザー情報/ロール/基本情報を取得
   useEffect(() => {
     const cookieValue = getCookie("user");
     if (cookieValue) {
@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const roleCookie = getCookie("role");
     setRole(roleCookie === "1" ? 1 : 0);
 
-    // ペルソナ取得
+    // 基本情報取得
     const basicInfoCookie = getCookie("basicInfo");
     if (basicInfoCookie) {
       try {
@@ -167,7 +167,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     deleteCookie("user");
     // roleクッキーを削除
     document.cookie = "role=; path=/; Max-Age=0; SameSite=Lax";
-    // ペルソナも削除
+    // 基本情報も削除
     deleteCookie("basicInfo");
     // チケットCookieも削除（localStorageは保持）
     deleteCookie("tickets");

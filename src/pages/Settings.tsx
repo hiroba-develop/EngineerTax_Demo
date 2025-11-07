@@ -28,7 +28,7 @@ const Settings = () => {
     // 成功メッセージを表示
     setSuccessMessage("設定が保存されました");
 
-    // 一般ユーザー（role=0）のみペルソナ更新
+    // 一般ユーザー（role=0）のみ基本情報更新
     if (role === 0) {
       saveBasicInfo({
         ageGroup,
@@ -97,7 +97,6 @@ const Settings = () => {
                   name="name"
                   id="name"
                   value={user?.name || ""}
-                  readOnly
                   className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50"
                 />
               </div>
@@ -114,7 +113,6 @@ const Settings = () => {
                   name="email"
                   id="email"
                   value={user?.email || ""}
-                  readOnly
                   className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50"
                 />
               </div>

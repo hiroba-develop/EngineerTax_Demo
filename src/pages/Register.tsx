@@ -39,7 +39,7 @@ const Register = () => {
       // デモでは登録=即ログイン扱い
       const success = await login(email, password);
       if (success) {
-        // 一般ユーザーはペルソナページへ遷移
+        // 一般ユーザーは基本情報ページへ遷移
         if (!isAdminDomain) {
           navigate("/basicInfo");
           return;
